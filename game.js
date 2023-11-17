@@ -92,36 +92,50 @@ function setCanvasSize(){
 
     if(window.innerHeight > window.innerWidth){
         canvasSize = window.innerWidth * .8; // optiene el valor de x y de la pantalla
+        canvasSize = Number(canvasSize.toFixed(2));
     } else{
         canvasSize = window.innerHeight * .8;
+        canvasSize = Number(canvasSize.toFixed(2));
     }
     elementSize = canvasSize / 10 -1; // Dividino en grillas de 10 piezas
     // -2 por el borde
-    
+    playerPosition.x  = undefined;
     startGame();
 }
 
 // Metodos de movimiento
 function movUp(){
-    if((playerPosition.y - elementSize) > 10){
+    let comparativa = (playerPosition.y - elementSize)
+    comparativa = Number(comparativa.toFixed(2));
+
+    if(comparativa > 10){
         playerPosition.y -= elementSize;
         startGame();
     }
 }
 function movLeft(){
-    if((playerPosition.x - elementSize) >= 0){
+    let comparativa = (playerPosition.x - elementSize)
+    comparativa = Number(comparativa.toFixed(2));
+
+    if(comparativa >= 0){
         playerPosition.x -= elementSize;
         startGame();
     }
 }
 function movRight(){
-    if((playerPosition.x + elementSize) < (canvasSize-20)){
+    let comparativa = (playerPosition.x + elementSize)
+    comparativa = Number(comparativa.toFixed(2));
+
+    if(comparativa < (canvasSize-20)){
         playerPosition.x += elementSize;
         startGame();
     }
 }
 function movDown(){
-    if((playerPosition.y + elementSize) < canvasSize){
+    let comparativa = (playerPosition.x + elementSize)
+    comparativa = Number(comparativa.toFixed(2));
+
+    if(comparativa < canvasSize){
         playerPosition.y += elementSize;
         startGame();
     }
@@ -142,18 +156,20 @@ function moveKeys(event){
 }
 
 function movePlayer(){
-    let x = playerPosition.x.toFixed(2);
-    let y = playerPosition.y.toFixed(2);
+    let x = Number(playerPosition.x.toFixed(2));
+    let y = Number(playerPosition.y.toFixed(2));
     
     game.fillText(emojis['PLAYER'],x,y);
 
+    console.log(x,giftPosition.x, y, giftPosition.y);
+
     if(x == giftPosition.x && y == giftPosition.y){
-        levelWin();
+        levelNext();
         return;
     }
     const enemyCollisions = enemiesPosition.find(enemy => {
-        let enemyCollisionsX = enemy.x == playerPosition.x.toFixed(2);
-        let enemyCollisionsY = enemy.y == playerPosition.y.toFixed(2);
+        let enemyCollisionsX = enemy.x == Number(playerPosition.x.toFixed(2));
+        let enemyCollisionsY = enemy.y == Number(playerPosition.y.toFixed(2));
         return enemyCollisionsX && enemyCollisionsY;
     });
 
@@ -163,13 +179,13 @@ function movePlayer(){
 
 }
 
-function levelWin(){ // reinicia los valores de las variables
+function levelNext(){ // reinicia los valores de las variables
     if((level +1 ) < maps.length ){ // que no se pase y cicla los niveles
         level += 1; 
     } else{
         level = 0;
     }
-    console.log("You Win!!"); // Agregar pantalla
+    //console.log("You Win!!"); // Agregar pantalla
     
     playerPosition.x = undefined; 
     enemiesPosition = [];
@@ -178,7 +194,6 @@ function levelWin(){ // reinicia los valores de las variables
 }
 
 function levelFail(){
-    console.log(lives);
     if(lives > 0){
         lives--;
         playerPosition.x = undefined
@@ -200,7 +215,6 @@ function levelFail(){
         enemiesPosition = [];
         flag = true;
         level = 0;
-        console.log("Perdiste"); // Agregar pantalla
     }
     startGame();
 }
@@ -229,11 +243,11 @@ function renderizado(){
                 playerPosition.y = posY;
             }
             if(col == 'I'){
-                giftPosition.x = posX.toFixed(2);
-                giftPosition.y = posY.toFixed(2);
+                giftPosition.x = Number(posX.toFixed(2));
+                giftPosition.y = Number(posY.toFixed(2));
             }
             if(col == 'X' && flag){
-                enemiesPosition.push({x:posX.toFixed(2),y:posY.toFixed(2)});
+                enemiesPosition.push({x:Number(posX.toFixed(2)),y:Number(posY.toFixed(2))});
             } 
         });
     });
