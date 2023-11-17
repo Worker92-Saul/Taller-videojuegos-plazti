@@ -35,6 +35,11 @@ const spanTime = document.querySelector("#time");
 const spanRecord = document.querySelector("#recordTime");
 const parReslt = document.querySelector("#result");
 
+const messageFail = document.querySelector(".fail");
+const messageWin = document.querySelector(".win");
+const buttomFail = document.querySelector("#winRestart");
+const buttomWin = document.querySelector("#failRestart");
+
 window.addEventListener('load',setCanvasSize); // Si ya ha cargado el html por completo
 // puede haber errores si no se ha cargado por completo
 window.addEventListener('resize',setCanvasSize); // Cuando se redimencio vulve a calcular el render
@@ -50,6 +55,9 @@ down.addEventListener('click', movDown);
 window.addEventListener('keydown', moveKeys);
 // ------------Listeners de movimiento------------
 
+buttomFail.addEventListener('click',reiniciar);
+buttomWin.addEventListener('click',reiniciar);
+
 function startGame(){ // metodos del game, iniciados al inicio
     // El start game es mejor dejarlo con acciones encapsuladas.
     
@@ -60,16 +68,7 @@ function startGame(){ // metodos del game, iniciados al inicio
     renderizado();
     movePlayer();
     showLives();
-    if(!timeStart){ // Esta vacia undefinite?
-        timeStart = Date.now(); // Imprime el tiempo en milisengundos
-        timeIntervale = setInterval(showTime,100);
-        showRecord();
-        //const intervalo = setInterval(() => console.log("imprime"),1000); // Ejecuta metodo cada intervalo establecido.
-        // Podemos detenerlo asignandolo a una variable y usando clear intervale(inter);
-        //clearInterval(intervalo);
-        //setTimeout(() => console.log('imprime'),1000); // Ejecuta 1 vez despues del tiempo establecido.
-
-    }
+    reiniciarRelog();
     /* 
     for (let index = 0; index < 10; index++) { // 0 para que se pinte desde la esquina
         for (let j = 1; j < 11; j++) { // y para que se vea
@@ -161,8 +160,6 @@ function movePlayer(){
     
     game.fillText(emojis['PLAYER'],x,y);
 
-    console.log(x,giftPosition.x, y, giftPosition.y);
-
     if(x == giftPosition.x && y == giftPosition.y){
         levelNext();
         return;
@@ -180,43 +177,74 @@ function movePlayer(){
 }
 
 function levelNext(){ // reinicia los valores de las variables
-    if((level +1 ) < maps.length ){ // que no se pase y cicla los niveles
-        level += 1; 
-    } else{
-        level = 0;
-    }
-    //console.log("You Win!!"); // Agregar pantalla
-    
     playerPosition.x = undefined; 
     enemiesPosition = [];
     flag = true;
-    startGame(); // reinicia el juego.
+
+    if((level +1 ) < maps.length ){ // que no se pase y cicla los niveles
+        level += 1; 
+        startGame(); // reinicia el juego.
+    } else{
+        messageWin.classList.remove("inactive");
+        stopIntervale();
+        console.log("You Win!!"); // Agregar pantalla 
+        level = 0;
+    }
+    
 }
 
 function levelFail(){
     if(lives > 0){
         lives--;
         playerPosition.x = undefined
+        startGame();
     } else{
-        clearInterval(timeIntervale);
-        timeStart = undefined;
-        const recordTime = localStorage.getItem('record_time');
-        if(!recordTime){
-            localStorage.setItem('record_time',spanTime.innerHTML);
-        } else{
-            if(recordTime > spanTime.innerHTML){
-                localStorage.setItem('record_time',spanTime.innerHTML);
-                parReslt.innerHTML = "Record Superado";
-            }
-        }
-
-        lives = 2;
-        playerPosition.x = undefined; 
-        enemiesPosition = [];
-        flag = true;
-        level = 0;
+        lives = -1;
+        showLives();
+        stopIntervale();
+        messageFail.classList.remove("inactive");
     }
+    
+}
+
+function reiniciar(){
+    messageFail.classList.add('inactive');
+    messageWin.classList.add('inactive');
+    timeStart = undefined;
+    lives = 2;
+    playerPosition.x = undefined; 
+    enemiesPosition = [];
+    flag = true;
+    level = 0;
     startGame();
+
+}
+function reiniciarRelog(){
+    if(!timeStart){ // Esta vacia undefinite?
+        timeStart = Date.now(); // Imprime el tiempo en milisengundos
+        timeIntervale = setInterval(showTime,100);
+        showRecord();
+        //const intervalo = setInterval(() => console.log("imprime"),1000); // Ejecuta metodo cada intervalo establecido.
+        // Podemos detenerlo asignandolo a una variable y usando clear intervale(inter);
+        //clearInterval(intervalo);
+        //setTimeout(() => console.log('imprime'),1000); // Ejecuta 1 vez despues del tiempo establecido.
+
+    }
+}
+function stopIntervale(){
+    // Detener intervalo
+    console.log("stop");
+    clearInterval(timeIntervale);
+    const recordTime = localStorage.getItem('record_time');
+    if(!recordTime){
+        localStorage.setItem('record_time',spanTime.innerHTML);
+    } else{
+        if(spanTime.innerHTML < recordTime){
+            localStorage.setItem('record_time',spanTime.innerHTML);
+            console.log("me actualizo");
+            parReslt.innerHTML = "Record Superado";
+        }
+    }
 }
 function renderizado(){
     // Obtener elementos individuales
