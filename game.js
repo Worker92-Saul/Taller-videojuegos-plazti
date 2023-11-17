@@ -187,6 +187,7 @@ function levelNext(){ // reinicia los valores de las variables
     } else{
         messageWin.classList.remove("inactive");
         stopIntervale();
+        setRecord();
         console.log("You Win!!"); // Agregar pantalla 
         level = 0;
     }
@@ -233,15 +234,16 @@ function reiniciarRelog(){
 }
 function stopIntervale(){
     // Detener intervalo
-    console.log("stop");
     clearInterval(timeIntervale);
+}
+
+function setRecord(){
     const recordTime = localStorage.getItem('record_time');
     if(!recordTime){
         localStorage.setItem('record_time',spanTime.innerHTML);
     } else{
         if(spanTime.innerHTML < recordTime){
             localStorage.setItem('record_time',spanTime.innerHTML);
-            console.log("me actualizo");
             parReslt.innerHTML = "Record Superado";
         }
     }
